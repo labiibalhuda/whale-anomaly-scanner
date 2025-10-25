@@ -11,6 +11,8 @@ import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+
+
 # ========================= CONFIG =========================
 POLL_INTERVAL = 30
 MIN_COUNT = 71
@@ -21,28 +23,22 @@ MIN_BALANCE_USD = 20_000_000
 MIN_DEPOSIT_USD = 20_000_000
 
 # Email configuration (from environment variables)
-EMAIL_SENDER = os.getenv("EMAIL_SENDER")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
-EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
+RECEIVER_EMAIL = os.getenv("RECEIVER_EMAIL")
 
 # ===========================================================
 
-def send_email(subject, body):
-    """Send email notification for anomaly detection."""
-    try:
-        msg = MIMEMultipart()
-        msg["From"] = EMAIL_SENDER
-        msg["To"] = EMAIL_RECEIVER
-        msg["Subject"] = subject
-        msg.attach(MIMEText(body, "plain"))
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(EMAIL_SENDER, EMAIL_PASSWORD)
-            server.send_message(msg)
+def send_email_alert(subject, body):
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = EMAIL_USER
+    msg["To"] = RECEIVER_EMAIL
 
-        print(f"📧 Email sent: {subject}")
-    except Exception as e:
-        print(f"❌ Email error: {e}")
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(EMAIL_USER, EMAIL_PASS)
+        server.send_message(msg)
 
 def scrape_top_wallets(num=100):
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -191,3 +187,4 @@ if __name__ == "__main__":
             t.join()
         print(f"Cycle complete. Sleeping {POLL_INTERVAL}s...\n")
         time.sleep(POLL_INTERVAL)
+
