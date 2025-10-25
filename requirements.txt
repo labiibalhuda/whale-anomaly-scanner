@@ -1,0 +1,6 @@
+pandas
+numpy
+requests
+smtplib
+email-validator
+schedule
